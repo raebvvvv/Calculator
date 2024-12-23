@@ -1,3 +1,3 @@
 # Calculator
-# With PEMDAS logic
-#Convert to Different Number Systems
+With PEMDAS logic
+Convert to Different Number Systems
