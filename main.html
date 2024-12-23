@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <script src="https://kit.fontawesome.com/8ad8ec53a6.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="overlay" id="overlay"></div>
+        <div class="topBar">
+            <p>Calculator</p>
+        </div>
+
+        <div class="secondaryBar">
+            <button class="history"><i class="fas fa-history"></i></button>
+        </div>
+
+        <div class="input-group">
+            <input type="text" id="cal" value="0" readonly>
+        </div>
+
+        <div class="modes">
+            <p data-action="MC">MC</p>
+            <p data-action="MR">MR</p>
+            <p data-action="M+">M+</p>
+            <p data-action="M-">M-</p>
+            <p data-action="MS">MS</p>
+            <p data-action="Mdown" class="Mdown">M￬</p>
+        </div>
+        <hr>
+        <div class="topOperations">
+           <p data-action="%">%</p>
+            <p data-action="CE">CE</p>
+            <p data-action="C">C</p>
+            <p data-action="backspace"><i class="fas fa-backspace"></i></p>
+        </div>
+
+        <div class="numbersAndBasicOperations">
+            <p data-convert="binary">Binary</p>
+            <p data-convert="octal">Octal</p>
+            <p data-convert="hexadecimal">Hexadecimal</p>
+            <p data-convert="decimal">Decimal</p>
+            <p data-action="/">/</p>
+            <p class="number">7</p>
+            <p class="number">8</p>
+            <p class="number">9</p>
+            <p data-action="*">X</p>
+
+            <p class="number">4</p>
+            <p class="number">5</p>
+            <p class="number">6</p>
+            <p data-action="-">-</p>
+
+            <p class="number">1</p>
+            <p class="number">2</p>
+            <p class="number">3</p>
+            <p data-action="+">+</p>
+
+            <p data-action="toggle-sign">+/-</p>
+            <p class="number">0</p>
+            <p data-action=".">.</p>
+            <p data-action="=">=</p>
+        </div>
+
+        <!-- Memory Modal -->
+        <div id="memoryModal">
+            <h2>Memory</h2>
+            <ul id="memory-list"></ul>
+            <button id="closeModal">Close</button>
+        </div>
+
+        <!-- History Modal -->
+        <div id="historyModal" class="modal">
+            <h2>History</h2>
+            <ul id="history-list"></ul>
+            <button id="clearHistory">Clear History</button>
+            <button id="closeHistoryModal">Close</button>
+        </div>
+    </div>
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const display = document.getElementById('cal');
+        const overlay = document.getElementById('overlay'); // Overlay element
+        const memoryModal = document.getElementById('memoryModal'); // Memory modal element
+        const memoryList = document.getElementById('memory-list'); // List in the memory modal
+        const closeModalButton = document.getElementById('closeModal'); // Close button for memory modal
+        const historyModal = document.getElementById('historyModal'); // History modal element
+        const historyList = document.getElementById('history-list'); // List in the history modal
+        const clearHistoryButton = document.getElementById('clearHistory'); // Clear history button
+        const closeHistoryModalButton = document.getElementById('closeHistoryModal'); // Close button for history modal
+        let currentInput = '';
+        let currentExpression = '';
+        let operator = null;
+        let memory = [];
+        let history = [];
+
+        function updateDisplay(value) {
+            display.value = value;
+        }
+
+        function updateMemoryList() {
+            memoryList.innerHTML = '';
+            memory.forEach(item => {
+                const listItem = document.createElement('li');
+                listItem.textContent = item;
+                memoryList.appendChild(listItem);
+            });
+        }
+
+        function updateHistoryList() {
+            historyList.innerHTML = '';
+            history.forEach(item => {
+                const listItem = document.createElement('li');
+                listItem.textContent = item;
+                historyList.appendChild(listItem);
+            });
+        }
+
+        // Toggle Memory Modal
+        document.querySelector('.Mdown').addEventListener('click', () => {
+            if (memoryModal.style.display === 'none' || !memoryModal.style.display) {
+                updateMemoryList();
+                memoryModal.style.display = 'block';
+            } else {
+                memoryModal.style.display = 'none';
+            }
+        });
+
+        // Close Memory Modal
+        closeModalButton.addEventListener('click', () => {
+            memoryModal.style.display = 'none';
+            overlay.style.display = 'none'; // Hide overlay
+        });
+
+        // Toggle History Modal
+        document.querySelector('.history').addEventListener('click', () => {
+            if (historyModal.style.display === 'none' || !historyModal.style.display) {
+                updateHistoryList();
+                historyModal.style.display = 'block';
+                overlay.style.display = 'block'; // Show overlay
+            } else {
+                historyModal.style.display = 'none';
+                overlay.style.display = 'none'; // Hide overlay
+            }
+        });
+
+        // Clear History
+        clearHistoryButton.addEventListener('click', () => {
+            history = [];
+            updateHistoryList();
+        });
+
+        // Close History Modal
+        closeHistoryModalButton.addEventListener('click', () => {
+            historyModal.style.display = 'none';
+            overlay.style.display = 'none'; // Hide overlay
+        });
+
+        // Handle Number Buttons
+        document.querySelectorAll('.number').forEach(button => {
+            button.addEventListener('click', () => {
+                if (currentInput === '0') {
+                    currentInput = button.textContent;
+                } else {
+                    currentInput += button.textContent;
+                }
+                currentExpression += button.textContent;
+                updateDisplay(currentExpression);
+            });
+        });
+
+        // Handle Operator Buttons
+        document.querySelectorAll('[data-action]').forEach(button => {
+            button.addEventListener('click', () => {
+                const action = button.getAttribute('data-action');
+                if (['+', '-', '*', '/'].includes(action)) {
+                    if (currentInput !== '') {
+                        currentExpression += ` ${action} `;
+                        currentInput = '';
+                        updateDisplay(currentExpression);
+                    }
+                } else if (action === '=') {
+                    if (currentExpression) {
+                        try {
+                            const result = evaluateExpression(currentExpression);
+                            history.push(`${currentExpression} = ${result}`);
+                            currentExpression = result.toString();
+                            currentInput = result.toString();
+                            updateDisplay(currentExpression);
+                        } catch (error) {
+                            updateDisplay('Error');
+                            currentInput = '';
+                            currentExpression = '';
+                        }
+                    }
+                } else if (action === 'C') {
+                    currentInput = '';
+                    currentExpression = '';
+                    updateDisplay('0');
+                } else if (action === 'CE') {
+                    currentInput = '';
+                    updateDisplay('0');
+                } else if (action === 'backspace') {
+                    currentInput = currentInput.slice(0, -1) || '0';
+                    currentExpression = currentExpression.slice(0, -1) || '0';
+                    updateDisplay(currentExpression);
+                } else if (action === '%') {
+                    if (currentInput) {
+                        currentInput = (parseFloat(currentInput) / 100).toString();
+                        currentExpression = currentInput;
+                        updateDisplay(currentExpression);
+                    }
+                } else if (action === '.') {
+                    if (!currentInput.includes('.')) {
+                        currentInput += '.';
+                        currentExpression += '.';
+                        updateDisplay(currentExpression);
+                    }
+                } else if (action === 'toggle-sign') {
+                    if (currentInput) {
+                        currentInput = (parseFloat(currentInput) * -1).toString();
+                        currentExpression = currentInput;
+                        updateDisplay(currentExpression);
+                    }
+                } else if (action === 'MC') {
+                    memory = [];
+                    updateMemoryList();
+                } else if (action === 'MR') {
+                    if (memory.length > 0) {
+                        currentInput = memory[memory.length - 1].toString();
+                        currentExpression = currentInput;
+                        updateDisplay(currentExpression);
+                    }
+                } else if (action === 'M+') {
+                    memory.push(parseFloat(currentInput) || 0);
+                    updateMemoryList();
+                } else if (action === 'M-') {
+                    memory.push(-(parseFloat(currentInput) || 0));
+                    updateMemoryList();
+                } else if (action === 'MS') {
+                    memory = [parseFloat(currentInput) || 0];
+                    updateMemoryList();
+                }
+            });
+        });
+
+        // Handle Conversion Buttons
+        document.querySelectorAll('[data-convert]').forEach(button => {
+            button.addEventListener('click', () => {
+                const convertType = button.getAttribute('data-convert');
+                if (currentInput) {
+                    let number;
+
+                    // Determine the base of the current input
+                    if (currentInput.startsWith('0b')) {
+                        number = parseInt(currentInput.slice(2), 2);
+                    } else if (currentInput.startsWith('0o')) {
+                        number = parseInt(currentInput.slice(2), 8);
+                    } else if (currentInput.startsWith('0x')) {
+                        number = parseInt(currentInput.slice(2), 16);
+                    } else {
+                        number = parseFloat(currentInput);
+                    }
+
+                    if (isNaN(number)) {
+                        updateDisplay('Error');
+                        return;
+                    }
+
+                    let convertedValue;
+                    if (convertType === 'decimal') {
+                        convertedValue = number.toString();
+                    } else {
+                        const baseMap = {
+                            binary: 2,
+                            octal: 8,
+                            hexadecimal: 16,
+                        };
+                        const base = baseMap[convertType];
+                        convertedValue = number.toString(base);
+                        if (convertType === 'binary') {
+                            convertedValue = `0b${convertedValue}`;
+                        } else if (convertType === 'octal') {
+                            convertedValue = `0o${convertedValue}`;
+                        } else if (convertType === 'hexadecimal') {
+                            convertedValue = `0x${convertedValue.toUpperCase()}`;
+                        }
+                    }
+
+                    updateDisplay(convertedValue); // Only show the converted value
+                }
+            });
+        });
+
+        // Evaluate expression using PEMDAS
+        function evaluateExpression(expression) {
+            // Split the expression into tokens
+            const tokens = expression.split(' ').filter(token => token);
+
+            // Convert tokens to a more structured format
+            const operators = [];
+            const values = [];
+
+            const precedence = {
+                '+': 1,
+                '-': 1,
+                '*': 2,
+                '/': 2
+            };
+
+            tokens.forEach(token => {
+                if (!isNaN(token)) {
+                    values.push(parseFloat(token));
+                } else if (token in precedence) {
+                    while (operators.length && precedence[operators[operators.length - 1]] >= precedence[token]) {
+                        const operator = operators.pop();
+                        const b = values.pop();
+                        const a = values.pop();
+                        values.push(applyOperator(a, b, operator));
+                    }
+                    operators.push(token);
+                }
+            });
+
+            while (operators.length) {
+                const operator = operators.pop();
+                const b = values.pop();
+                const a = values.pop();
+                values.push(applyOperator(a, b, operator));
+            }
+
+            return values[0];
+        }
+
+        function applyOperator(a, b, operator) {
+            switch (operator) {
+                case '+':
+                    return a + b;
+                case '-':
+                    return a - b;
+                case '*':
+                    return a * b;
+                case '/':
+                    return a / b;
+                default:
+                    throw new Error(`Unknown operator: ${operator}`);
+            }
+        }
+    });
+    </script>
+</body>
+
+</html>

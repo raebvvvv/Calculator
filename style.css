@@ -1,0 +1,245 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 50px;
+    background-color: #e9e9e9;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.container {
+    width: 90%; /* Adjusted to be relative to the viewport */
+    max-width: 550px; /* Keeps a maximum limit */
+    background-color: #fff;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+}
+
+
+.topBar{
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.topBar p{
+    font-size: 12px;
+}
+
+.icons{
+    color: rgb(160, 156, 156)
+}
+
+.icons i:not(:first-of-type){
+    margin-left: 20px;
+}
+
+.secondaryBar{
+    padding: 20px 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.secondaryBar .burgerAndHeading{
+    display: flex;
+    align-items: center;
+}
+
+.burger .line{
+    width: 25px;
+    height: 1px;
+    margin: 4px 0;
+    background-color: #333;
+}
+
+.secondaryBar h3{
+    margin-left: 20px;
+    font-size: 15px;
+    letter-spacing: 1px;
+}
+
+.input-group input{
+    padding: 30px 10px 15px 10px;
+    border: none;
+    width: 100%;
+    text-align: right;
+    font-size: 40px;
+}
+
+.input-group input:focus{
+    border: none;
+}
+
+.modes{
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    align-items: center;
+    flex-grow: 1;
+}
+
+.modes p{
+    font-size: 12px;
+    text-align: center;
+    padding: 10px 0;
+}
+
+.modes p:hover{
+    background-color: #ddd;
+}
+
+.modes p.de-active{
+    color: #999;
+}
+
+.modes i{
+    font-size: 5px;
+}
+
+.topOperations{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    text-align: center;
+    align-items: center;
+    justify-content: stretch;
+}
+
+.topOperations p{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 15px;
+    padding: 15px 0;
+}
+
+.topOperations p:hover{
+    background-color: #999;
+}
+
+.numbersAndBasicOperations{
+    background-color: #f1f1f1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    text-align: center;
+}
+
+.numbersAndBasicOperations p{
+    padding: 15px;
+}
+
+.numbersAndBasicOperations p.number{
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.numbersAndBasicOperations p:hover{
+    background-color: #ddd;
+}
+#memoryModal {
+    display: none; 
+    position: fixed; 
+    top: 20%;
+    left:75%;
+    transform: translate(-50%, -50%); 
+    background: #333; 
+    color: white; 
+    width: 300px; /* Fixed width */
+    height: 300px; /* Fixed height */
+    padding: 5%;
+    border-radius: 10px;
+}
+#closeModal {
+    align-self: center;
+    background: red;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+#memoryModal h2 {
+    margin: 0;
+    text-align: center;
+    font-size: 1.5em;
+    margin-top: -80px;
+}
+#memory-list {
+    margin: 20px 0;
+    list-style: none;
+    padding: 0;
+    max-height: 170px;
+    width: 150px;
+    overflow-y: auto;
+}
+#historyModal {
+    display: none; 
+    position: fixed; 
+    top: 20%;
+    left:25%;
+    transform: translate(-50%, -50%); 
+    background: #333; 
+    color: white; 
+    width: 300px; /* Fixed width */
+    height: 300px; /* Fixed height */
+    padding: 5%;
+    border-radius: 10px;
+}
+#closeHistoryModal {
+    align-self: right;
+    background: green;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+#clearHistory {
+    background: red;
+    color: white;
+    padding: 10px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 5px;
+}
+#historyModal h2 {
+    margin: 0;
+    text-align: center;
+    font-size: 1.5em;
+    margin-top: -80px;
+}
+#history-list {
+    margin: 20px 0;
+    list-style: none;
+    padding: 0;
+    max-height: 170px;
+    width: 150px;
+    overflow-y: auto;
+}
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    z-index: 10;
+}
+.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+}
+.modal {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border: 1px solid #ccc;
+    padding: 20px;
+    z-index: 20;
+}
